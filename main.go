@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/gofiber/fiber/v2"
 
+	appMiddleware "LoganXav/sori/app/middlewares"
 	appConfig "LoganXav/sori/configs"
 	appDatabase "LoganXav/sori/database"
 )
@@ -63,7 +64,7 @@ func main() {
 		}
 	}
 	// TODO: S3 Setup
-	// TODO: Apply Middlewares
+	appMiddleware.DefaultMiddleware(app)
 	// TODO: Setup Routes
 	// TODO: Run Cron Jobs
 	// TODO: Start Server
