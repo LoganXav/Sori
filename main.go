@@ -26,13 +26,14 @@ func main() {
 	// Create a new Fiber app
 	app := fiber.New(config)
 
-	// Database
+	// GORM connect
 	dbConnectionError := appDatabase.Connect()
 
 	if dbConnectionError != nil{
 		panic("Cannot connect database: " + dbConnectionError.Error())
 	}
 
+	// Underlying SQL connect
 	db, err := appDatabase.DB.DB()
 
 	if err != nil {
@@ -45,9 +46,22 @@ func main() {
 		panic("Cannot connect database: " + errc.Error())
 	}
 
-	// TODO: DB Migration
+	// Generate Migrations
+	errMigrate := appDatabase.MigrateDatabase()
+	if errMigrate != nil {
+		panic("migration error: " + errMigrate.Error())
+	}
+
 	defer db.Close()
-	// TODO: Redis Setup
+	
+	// Redis Setup
+	if appConfig.GetEnv("REDIS_ACTIVATE") == "true"{
+		errRedis := appDatabase.RedisConnect()
+
+		if errRedis != nil {
+			panic("Cannot start redis connection: " + errRedis.Error())
+		}
+	}
 	// TODO: S3 Setup
 	// TODO: Apply Middlewares
 	// TODO: Setup Routes
