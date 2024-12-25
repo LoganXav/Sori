@@ -22,7 +22,7 @@ func FiberConfig() fiber.Config {
   }
 	// Return Fiber configuration.
 	return fiber.Config{
-		EnableTrustedProxyCheck: true,g
+		EnableTrustedProxyCheck: true,
    
     // Converts the integer readTimeoutSecondsCount into a time.Duration value (in seconds)
 		ReadTimeout:             time.Second * time.Duration(readTimeoutSecondsCount),

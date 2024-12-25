@@ -4,8 +4,10 @@ import (
 	"github.com/gofiber/fiber/v2"
 
 	appMiddleware "LoganXav/sori/app/middlewares"
+	appRoutes "LoganXav/sori/app/routes"
 	appConfig "LoganXav/sori/configs"
 	appDatabase "LoganXav/sori/database"
+	appHelper "LoganXav/sori/helpers"
 )
 
 // @title Sori
@@ -63,10 +65,19 @@ func main() {
 			panic("Cannot start redis connection: " + errRedis.Error())
 		}
 	}
+
+
 	// TODO: S3 Setup
 	appMiddleware.DefaultMiddleware(app)
 	// TODO: Setup Routes
+	appRoutes.MainRoutes(app)
 	// TODO: Run Cron Jobs
-	// TODO: Start Server
+
+	// Start Server
+	if appConfig.GetEnv("ENV") == "dev" || true {
+		appHelper.StartServer(app)
+	} else {
+		appHelper.StartServerWithGracefulShutdown(app)
+	}
 
 }
