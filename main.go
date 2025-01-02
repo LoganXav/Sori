@@ -24,7 +24,7 @@ import (
 // @description Type "Bearer" followed by a space and JWT token.
 func main() {
 
-  config := appConfig.FiberConfig()
+  	config := appConfig.FiberConfig()
 
 	// Create a new Fiber app
 	app := fiber.New(config)
@@ -74,7 +74,7 @@ func main() {
 	// TODO: Run Cron Jobs
 
 	// Start Server
-	if appConfig.GetEnv("ENV") == "dev" || true {
+	if appConfig.GetEnv("ENV") == "development" || true {
 		appHelper.StartServer(app)
 	} else {
 		appHelper.StartServerWithGracefulShutdown(app)

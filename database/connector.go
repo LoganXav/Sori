@@ -18,7 +18,7 @@ func Connect() error {
 
 	var loggerInfo logger.Interface
 
-	if appConfig.GetEnv("ENV") == "dev" {
+	if appConfig.GetEnv("ENV") == "development" {
 		loggerInfo = logger.Default.LogMode(logger.Info)
 	}
 

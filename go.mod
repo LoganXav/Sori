@@ -1,6 +1,6 @@
 module LoganXav/sori
 
-go 1.23.1
+go 1.23
 
 require gorm.io/gorm v1.25.12
 

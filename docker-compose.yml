@@ -1,0 +1,61 @@
+version: "3.6"
+services:
+  sori:
+    container_name: sori-api
+    build:
+      context: .
+      dockerfile: "./docker/go/${ENV}/Dockerfile"
+    volumes:
+      - .:/go/src/sori
+      - ./logs/supervisor/:/var/log/supervisor
+    networks:
+      - backend
+    ports:
+      - "${SORI_CONTAINER_HTTP_PORT}:3000"
+
+  nginx:
+    container_name: sori-nginx
+    build: "./docker/nginx"
+    ports:
+      - "${NGINX_HOST_HTTP_PORT}:80"
+      - "${NGINX_HOST_HTTP_PORT}:443"
+    depends_on:
+      - sori
+    networks:
+      - backend
+    volumes:
+      - ./logs/nginx/:/var/log/nginx
+
+  ########### MYSQL ###########
+  mysql:
+    container_name: sori-mysql
+    build:
+      context: ./docker/mysql
+      args:
+        - MYSQL_VERSION=${MYSQL_VERSION}
+    environment:
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - TZ=${WORKSPACE_TIMEZONE}
+    volumes:
+      - ./docker/mysql/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
+    ports:
+      - "${MYSQL_PORT}:3306"
+    networks:
+      - backend
+
+  ### Redis ################################################
+  redis:
+    container_name: sori-redis
+    build: ./docker/redis
+    #    volumes:
+    #      - ${DATA_PATH_HOST}/redis:/data
+    ports:
+      - "${REDIS_PORT}:6379"
+    networks:
+      - backend
+networks:
+  backend:
+    driver: bridge
