@@ -69,7 +69,7 @@ func main() {
 
 	// TODO: S3 Setup
 	appMiddleware.DefaultMiddleware(app)
-	// TODO: Setup Routes
+	appRoutes.ApiRoutes(app)
 	appRoutes.MainRoutes(app)
 	// TODO: Run Cron Jobs
 
