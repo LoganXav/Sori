@@ -40,7 +40,7 @@ func ConnectionUrlBuilder(n string) (string, error){
 		)
 	default:
 		// Return error message.
-		return "", fmt.Errorf("Connection name '%v' is not supported", n)
+		return "", fmt.Errorf("connection name '%v' is not supported", n)
 	}
 
 	// Return connection URL.

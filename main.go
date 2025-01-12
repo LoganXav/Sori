@@ -66,11 +66,16 @@ func main() {
 		}
 	}
 
+	// Initiate S3 Session
+	erraws := appHelper.StartAwsSession()
+	if erraws != nil {
+		panic("cannot start aws session: " + erraws.Error())
+	}
 
-	// TODO: S3 Setup
+
 	appMiddleware.DefaultMiddleware(app)
-	appRoutes.ApiRoutes(app)
 	appRoutes.MainRoutes(app)
+	appRoutes.ApiRoutes(app)
 	// TODO: Run Cron Jobs
 
 	// Start Server

@@ -11,17 +11,20 @@ import (
 
 func MigrateDatabase() error {
     if err := DB.AutoMigrate(&model.User{}); err != nil {
-        return fmt.Errorf("Cannot migrate table User: %w", err)
+        return fmt.Errorf("cannot migrate table User: %w", err)
     }
     if err := DB.AutoMigrate(&model.UserToken{}); err != nil {
-        return fmt.Errorf("Cannot migrate table UserToken: %w", err)
+        return fmt.Errorf("cannot migrate table UserToken: %w", err)
     }
     if err := DB.AutoMigrate(&model.File{}); err != nil {
-        return fmt.Errorf("Cannot migrate table File: %w", err)
+        return fmt.Errorf("cannot migrate table File: %w", err)
+    }
+    if err := DB.AutoMigrate(&model.Job{}); err != nil {
+        return fmt.Errorf("cannot migrate table Job: %w", err)
     }
 
     if err := SeedDatabase(); err != nil {
-        return fmt.Errorf("Failed to seed database: %w", err)
+        return fmt.Errorf("failed to seed database: %w", err)
     }
 
     return nil
