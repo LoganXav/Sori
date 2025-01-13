@@ -1,7 +1,7 @@
 # Use the official Go image based on Alpine for minimal footprint
 FROM golang:1.23-alpine AS build
 
-# Install necessary build tools, including GCC and OpenJDK 11 for FastQC
+# Install necessary build tools, OpenJDK, and font configuration packages
 RUN apk update && apk add --no-cache \
     make \
     git \
@@ -11,7 +11,11 @@ RUN apk update && apk add --no-cache \
     wget \
     perl \
     bash \
-    openjdk11 && \
+    openjdk11 \
+    fontconfig \
+    ttf-dejavu \
+    ttf-droid \
+    ttf-freefont && \
     update-ca-certificates
 
 # Install FastQC and ensure it's executable
@@ -46,9 +50,6 @@ ENV GOCACHE=/home/${USER}/.cache/go-build
 
 # Set the working directory for the Go application
 WORKDIR $GOPATH/src/sori
-
-# Verify FastQC installation
-RUN fastqc --version
 
 # Copy the application source code into the container
 COPY . .

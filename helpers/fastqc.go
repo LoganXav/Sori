@@ -10,6 +10,9 @@ import (
 )
 
 func RunFastQC(fileID string) (string, error) {
+
+	var resultURL string
+
 	// Define paths
 	// tempDir := os.TempDir()
 	tempDir := "./tmp/"
@@ -47,12 +50,19 @@ func RunFastQC(fileID string) (string, error) {
 		return "", fmt.Errorf("failed to run FastQC: %v", err)
 	}
 
-	// Generate the output report URL (e.g., store in S3 or local server)
+	// Generate the output report URL 
 	outputFile := filepath.Join(outputDir, fileID+"_fastqc.html")
 
+    reportKey := "fastq-reports/" + fileID + "_fastqc.html"
 
-  println(outputFile, "===")
-	resultURL := fmt.Sprintf("https://your-storage-service.com/reports/%s", filepath.Base(outputFile))
+    uploadResultMap, errUpload := UploadToS3(outputFile, reportKey)
 
-	return resultURL, nil
+	if errUpload != nil {
+		return "", fmt.Errorf("failed to save FastQ output to s3: %v", errUpload)
+	}
+
+	resultURL = uploadResultMap.AWSUrl
+	  
+	  return resultURL, nil
 }
+	
