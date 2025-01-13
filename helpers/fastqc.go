@@ -4,12 +4,15 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+
+	// "os/exec"
 	"path/filepath"
 )
 
 func RunFastQC(fileID string) (string, error) {
 	// Define paths
-	tempDir := os.TempDir()
+	// tempDir := os.TempDir()
+	tempDir := "./tmp/"
 	inputFilePath := filepath.Join(tempDir, fileID+".fastq.gz")
 	outputDir := filepath.Join(tempDir, "fastqc_output")
 
@@ -17,7 +20,7 @@ func RunFastQC(fileID string) (string, error) {
 	if err := os.MkdirAll(outputDir, 0755); err != nil {
 		return "", fmt.Errorf("failed to create output directory: %v", err)
 	}
-	defer os.RemoveAll(outputDir) 
+	// defer os.RemoveAll(outputDir) 
 
 	// Download FASTQ file from S3
 	fileKey := "fastqcs/" + fileID + ".fastq.gz"
@@ -25,7 +28,8 @@ func RunFastQC(fileID string) (string, error) {
 	if err := DownloadFromS3(fileKey, inputFilePath); err != nil {
 		return "", fmt.Errorf("failed to download file from S3: %v", err)
 	}
-	defer os.Remove(inputFilePath) 
+	// defer os.Remove(inputFilePath)
+
 
 	// Validate file exists
 	if _, err := os.Stat(inputFilePath); err != nil {
@@ -34,6 +38,10 @@ func RunFastQC(fileID string) (string, error) {
 
 	// Run FastQC
 	cmd := exec.Command("fastqc", inputFilePath, "-o", outputDir)
+
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+
 	err := cmd.Run()
 	if err != nil {
 		return "", fmt.Errorf("failed to run FastQC: %v", err)
@@ -41,6 +49,9 @@ func RunFastQC(fileID string) (string, error) {
 
 	// Generate the output report URL (e.g., store in S3 or local server)
 	outputFile := filepath.Join(outputDir, fileID+"_fastqc.html")
+
+
+  println(outputFile, "===")
 	resultURL := fmt.Sprintf("https://your-storage-service.com/reports/%s", filepath.Base(outputFile))
 
 	return resultURL, nil

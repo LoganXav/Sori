@@ -81,11 +81,13 @@ func DownloadFromS3(fileKey, destPath string) error {
 
 	defer output.Body.Close()
 
+
 	// Write object content to file
-	_, err = io.Copy(file, output.Body)
-	if err != nil {
-		return fmt.Errorf("failed to write file content: %v", err)
+	_, errCopy := io.Copy(file, output.Body)
+	if errCopy != nil {
+		return fmt.Errorf("failed to write file content: %v", errCopy)
 	}
+
 
 	return nil
 }

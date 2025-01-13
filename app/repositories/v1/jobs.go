@@ -62,16 +62,27 @@ func JobCreate(c *fiber.Ctx) (models.Job, error) {
 
 }
 
-func JobUpdateStatus(jobId uint, jobStatus models.JobStatus) error {
+func JobUpdateStatus(jobId uint, jobStatus models.JobStatus)  error {
 	db := appDatabase.DB
 	return db.Model(&models.Job{}).Where("id = ?", jobId).Update("status", jobStatus).Error
 }
 
-func JobUpdateResult(jobID uint, resultURL string, status models.JobStatus) error {
+func JobUpdateResult(jobID uint, resultURL string, status models.JobStatus) (models.Job, error) {
+	var job models.Job
 	db := appDatabase.DB
-	return db.Model(&models.Job{}).Where("id = ?", jobID).Updates(map[string]interface{}{
+
+	if err := db.Model(&job).Where("id = ?", jobID).Updates(map[string]interface{}{
 		"result_url": resultURL,
 		"status":     status,
-	}).Error
+	}).Error; err != nil {
+		return job, fmt.Errorf("failed to update job: %v", err)
+	}
+
+	if err := db.Where("id = ?", jobID).First(&job).Error; err != nil {
+		return job, fmt.Errorf("failed to retrieve updated job: %v", err)
+	}
+
+	return job, nil
 }
+
 

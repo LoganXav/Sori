@@ -41,15 +41,15 @@ func JobsQualityControl(c *fiber.Ctx) error {
 	}
 
 	// Update job status to "completed" and save result URL
-	err = repositoriesV1.JobUpdateResult(job.ID, outputURL, models.JobCompleted)
-	if err != nil {
+	newJob, errUpdate := repositoriesV1.JobUpdateResult(job.ID, outputURL, models.JobCompleted)
+	if errUpdate != nil {
 		return helpers.UnprocessableResponse(c, http.StatusInternalServerError, "Failed to update job result")
 	}
 
 
 	result := map[string]interface{}{
 		"message": "Quality Control Completed",
-		"data":  job,
+		"data":  newJob,
 	}
 
 	return helpers.SuccessResponse(c, result, "success")
