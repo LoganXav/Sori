@@ -8,8 +8,6 @@ import (
 	"encoding/json"
 	"fmt"
 
-	// structs "LoganXav/sori/app/structs"
-
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -26,31 +24,28 @@ func JobCreate(c *fiber.Ctx) (models.Job, error) {
 	}
 
 	fileID := helpers.SanitiseText(jobsCreateStructure.FileID)
+	referenceID := helpers.SanitiseText(jobsCreateStructure.ReferenceID)
+	jobName := helpers.SanitiseText(jobsCreateStructure.Name)
 	jobType := models.JobType(helpers.SanitiseText(jobsCreateStructure.Type))
-	// status := models.JobStatus(helpers.SanitiseText(jobsCreateStructure.Status))
 
 	// Validate jobType
 	if jobType != models.JobTypeQC && jobType != models.JobTypeAlignment && jobType != models.JobTypeDownstream {
 		return job, fmt.Errorf("invalid job type: %v", jobType)
 	}
 
-
-	// Set default status
-	status := models.JobPending
-
-	
 	// Check if the Job already exists (based on FileID)
 	exists := db.Model(&models.Job{}).Where("file_id = ?", fileID).First(&job).RowsAffected > 0
 	if exists {
 		return job, fmt.Errorf("job with file_id '%s' already exists", fileID)
 	}
 
-
 	// Map the struct to the Job model
 	newJob := models.Job{
-		FileID: fileID,
-		Type:   jobType,
-		Status: status,
+		FileID:      fileID,
+		ReferenceID: referenceID,
+		Type:        jobType,
+		Status:      models.JobPending,
+		Name:        jobName,
 	}
 
 	// Save the Job to the database
@@ -62,7 +57,7 @@ func JobCreate(c *fiber.Ctx) (models.Job, error) {
 
 }
 
-func JobUpdateStatus(jobId uint, jobStatus models.JobStatus)  error {
+func JobUpdateStatus(jobId uint, jobStatus models.JobStatus) error {
 	db := appDatabase.DB
 	return db.Model(&models.Job{}).Where("id = ?", jobId).Update("status", jobStatus).Error
 }
@@ -84,5 +79,3 @@ func JobUpdateResult(jobID uint, resultURL string, status models.JobStatus) (mod
 
 	return job, nil
 }
-
-

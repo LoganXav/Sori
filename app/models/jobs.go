@@ -22,12 +22,14 @@ const (
 )
 
 type Job struct {
-	ID        uint      `gorm:"primaryKey;autoIncrement" json:"id"` 
-	FileID    string    `gorm:"not null" json:"file_id"`           // Reference to the FASTQ file
-	Type      JobType   `gorm:"not null" json:"type"`             
-	Status    JobStatus `gorm:"not null" json:"status"`            
-	ResultURL string    `json:"result_url"`                       // S3 URL for the job's output
-	CreatedAt time.Time `gorm:"autoCreateTime" json:"created_at"`  
-	UpdatedAt time.Time `gorm:"autoUpdateTime" json:"updated_at"` 
-	Error     string    `json:"error,omitempty"`                 
+	ID          uint      `gorm:"primaryKey;autoIncrement" json:"id"`
+	Name        string    `gorm:"not null" json:"name"`
+	FileID      string    `gorm:"not null" json:"file_id"` // Reference to the FASTQ file
+	ReferenceID string    `gorm:"" json:"reference_id"`    // Reference to the Reference file if any, optional
+	Type        JobType   `gorm:"not null" json:"type"`
+	Status      JobStatus `gorm:"not null" json:"status"`
+	ResultURL   string    `json:"result_url"` // S3 URL for the job's output
+	CreatedAt   time.Time `gorm:"autoCreateTime" json:"created_at"`
+	UpdatedAt   time.Time `gorm:"autoUpdateTime" json:"updated_at"`
+	Error       string    `json:"error,omitempty"`
 }

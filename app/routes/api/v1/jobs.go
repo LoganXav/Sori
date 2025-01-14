@@ -8,10 +8,10 @@ import (
 )
 
 func JobsRoute(router fiber.Router) {
-	
+
 	jobs := router.Group("/jobs")
 
-	jobs.Post("/", controllerV1.JobsWorkflow)
+	jobs.Post("/align", validators.JobsAlignment, controllerV1.JobsAlignment)
 	jobs.Post("/qc", validators.JobsQualityControl, controllerV1.JobsQualityControl)
 	jobs.Get("/:id/results", controllerV1.JobsResult)
 	jobs.Get("/:id", controllerV1.JobsStatus)
